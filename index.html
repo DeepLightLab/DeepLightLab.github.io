@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepLight Lab — Layout 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0b1f33;
+      --blue: #0f4c81;
+      --aqua: #00c2c7;
+      --mist: #f5f7fb;
+      --card: #ffffff;
+      --muted: #4c5f73;
+      --accent: #5ee6ff;
+      --radius: 16px;
+      --shadow: 0 15px 45px rgba(10, 31, 51, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Sora', sans-serif;
+      color: var(--ink);
+      background: var(--mist);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    a { color: inherit; text-decoration: none; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(245,247,251,0.9);
+      border-bottom: 1px solid rgba(15,76,129,0.08);
+    }
+    .nav-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1rem;
+    }
+    .brand img { height: 44px; width: auto; }
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+    }
+    nav a {
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+    nav a:hover { background: rgba(15,76,129,0.08); color: var(--blue); }
+    .cta {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--aqua));
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+    }
+    .nav-toggle { display: none; background: none; border: none; font-size: 24px; cursor: pointer; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 20%, rgba(0,194,199,0.25), transparent 35%),
+                  radial-gradient(circle at 90% 10%, rgba(15,76,129,0.18), transparent 35%),
+                  linear-gradient(135deg, #071525, #0f2e4a 50%, #0b446f);
+      color: #f7fbff;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08), transparent 45%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 90px 20px 80px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: rgba(255,255,255,0.72); }
+    .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.6rem, 4vw, 3.6rem); margin: 12px 0 12px; line-height: 1.1; }
+    .hero p { font-size: 1.05rem; color: rgba(247,251,255,0.82); margin-bottom: 26px; }
+    .cloud {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius);
+      padding: 18px 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+    }
+    .metric { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; }
+    .metric strong { display: block; font-size: 1.25rem; color: #fff; }
+    .metric span { color: rgba(247,251,255,0.8); font-size: 0.95rem; }
+    .card-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      padding: 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15,76,129,0.08);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .hero .card { color: var(--ink); }
+    .hero .card p { color: var(--muted); }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(10,31,51,0.16); }
+    .section-title {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 6px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .section-title h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 1.9rem; }
+    .section-title p { margin: 0; color: var(--muted); }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .list li { background: var(--card); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); border: 1px solid rgba(15,76,129,0.08); }
+
+    .news-grid, .publication-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      gap: 16px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: rgba(15,76,129,0.08);
+      color: var(--blue);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .footer {
+      background: #0a1625;
+      color: #e8f1ff;
+      margin-top: 60px;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .contact a { color: #fff; text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; padding: 70px 20px 70px; }
+      nav ul { display: none; flex-wrap: wrap; }
+      nav ul.open { display: flex; }
+      .nav-toggle { display: inline-flex; color: var(--ink); }
+      .nav-shell { align-items: center; }
+      .cloud { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-shell">
+      <a class="brand" href="#">
+        <img src="logo.png" alt="DeepLight Lab logo">
+        <span>DeepLight Lab</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <nav>
+        <ul>
+          <li><a href="#mission">Mission</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#objectives">Objectives</a></li>
+          <li><a href="#competences">Competences</a></li>
+          <li><a href="#publications">Publications</a></li>
+          <li><a href="#news">News</a></li>
+          <li><a href="#team">Team</a></li>
+          <li><a href="#acknowledgements">Acknowledgements</a></li>
+          <li><a class="cta" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Non-linear optics • Spectral AI</div>
+        <h1>Deep learning from deep light</h1>
+        <p>We do research in AI applied to NIR spectroscopy, physics-informed models, and non-linear optical methods to understand how light moves 
+          through complex matter, from biological tissues to agri-food systems. We are a spin-off of the Sensing Group of CEOT@UAlg.</p>
+        <div class="cloud">
+          <div class="metric"><strong>10+ yrs</strong><span>Experience in NIR spectroscopy (from CEOT@UAlg)</span></div>
+          <div class="metric"><strong>Open data</strong><span>Benchmark datasets underway</span></div>
+          <div class="metric"><strong>Sustainability focus</strong><span>Aligned with EU Sustainable Development Goals</span></div>
+          <div class="metric"><strong>Interpretable AI</strong><span>Deep Learning & Physics-informed models</span></div>
+        </div>
+      </div>
+      <div class="card" style="background: rgba(255,255,255,0.9);">
+        <p class="tag">What we do</p>
+        <h3 style="font-family:'Space Grotesk',sans-serif; margin-top:6px;">Non-linear optics, spectroscopy, and AI converge in one lab.</h3>
+        <p style="color: var(--muted);">We prototype methods that separate absorption vs. scattering, design spectral deep learning pipelines, and 
+          validate them on real-world sensing problems.</p>
+        <div class="list">
+          <li><strong>Spectral AI:</strong> Deep chemometrics, eXplainable AI, uncertainty quantification.</li>
+          <li><strong>Light transport:</strong> Forward & inverse scattering models in tissues.</li>
+          <li><strong>Agri-food:</strong> Early disease detection and quality prediction.</li>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-title" id="mission">
+    <h2>Mission</h2>
+    <p>Discover how light encodes matter—and decode it responsibly with AI.</p>
+  </div>
+  <div class="card-grid">
+    <div class="card" style="grid-column: span 2;">
+      <p>DeepLight Lab explores the intersection of applied non-linear optics (light in turbid media), spectroscopy (Vis–NIR), 
+        and artificial intelligence. Our mission is to craft non-destructive analysis and quality control methods while deepening 
+        understanding of light–matter interaction in complex media. Due to our background we have a special emphasis building chemometric
+        models internal quality accessment of fruits, vegetables and other agri-food products. These same tools can also be used to
+        study biological processes in detail (maturation, ripening, senescence, etc.).</p>
+    </div>
+    <div class="card">
+      <h4>Non-destructive by design</h4>
+      <p>Experiments and AI pipelines that respect living tissues and delicate products.</p>
+    </div>
+    <div class="card">
+      <h4>Interdisciplinary</h4>
+      <p>Optics, signal processing, biologists and machine learning teams working side by side.</p>
+    </div>
+  </div>
+
+  <div class="section-title" id="research">
+    <h2>Research Lines</h2>
+    <p>Power-up NIR chemometrics with advanced modelling capabilities.</p>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Deep Chemometrics & Spectral AI</h4>
+      <p>Designing neural networks for NIR data with explainability overlays and uncertainty-aware calibration.</p>
+    </div>
+    <div class="card">
+      <h4>Optics & Light Scattering</h4>
+      <p>Separating absorption from scattering in tissue, coupling physical priors to deep learning models.</p>
+    </div>
+    <div class="card">
+      <h4>NIR for Agri-Food</h4>
+      <p>Rapid, non-destructive sensing for quality control, disease detection, and nutritional profiling.</p>
+    </div>
+    <div class="card">
+      <h4>Interpretable AI & Digital Twins (future)</h4>
+      <p>Building digital twins of spectrometers and physics-informed networks that explain their decisions.</p>
+    </div>
+  </div>
+
+  <div class="section-title" id="objectives">
+    <h2>Strategic Objectives</h2>
+    <p>What guides our roadmap.</p>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr));">
+    <div class="card"><strong>Do good science</strong><p>Develop useful and reliable methods for spectral AI.</p></div>
+    <div class="card"><strong>Open benchmarks</strong><p>Release curated, open-access datasets for spectroscopy.</p></div>
+    <div class="card"><strong>Industry transfer</strong><p>Translate advances into reliable tools for partners.</p></div>
+    <div class="card"><strong>Talent pipeline</strong><p>Train MSc, PhD, and post-docs on spectral AI and optics.</p></div>
+  </div>
+
+  <div class="section-title" id="competences">
+    <h2>Core Competences</h2>
+    <p>Depth across the pipeline.</p>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
+    <div class="card"><p class="tag">Optics</p><p>Non-linear optical setups, phantoms, time-resolved scattering, and custom instrumentation.</p></div>
+    <div class="card"><p class="tag">Spectroscopy</p><p>Vis–NIR acquisition, calibration, and spectral pre-processing tailored to noisy samples.</p></div>
+    <div class="card"><p class="tag">AI</p><p>Deep spectral models, interpretable CNNs, and physics-informed neural surrogates (future).</p></div>
+    <div class="card"><p class="tag">Deployment</p><p>Portable pipelines, benchmarking frameworks, and data governance for collaborative projects.</p></div>
+  </div>
+
+  <div class="section-title" id="publications">
+    <h2>Publications & Outputs</h2>
+    <p>Selected recent highlights.</p>
+  </div>
+  <div class="card-grid publication-grid">
+    <div class="card"><strong><a href="https://github.com/dario-passos/DeepLearning_for_VIS-NIR_Spectra" target="_blank">
+      DeepLearning for VIR-NIR Spectra</a></strong>
+      <p>A github repository with some of the code we develop and publish</p></div>
+    <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S0169743923002733" target="_blank">
+      Deep Tutti-Frutti</a></strong>
+      <p> Exploring CNN architectures for dry matter prediction in fruit from multi-fruit near-infrared spectra</p></div>
+    <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S1386142525003749" target="_blank">
+      Deep Tutti-Frutti II</a></strong>
+      <p> Explainability of CNN architectures for fruit dry matter predictions</p></div>
+    <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S0169743922000314" target="_blank">
+      Tutorial on hyperparameter tuning</a></strong>
+      <p> A tutorial on automatic hyperparameter tuning of deep spectral modelling for regression and classification tasks</p></div>      
+    <div class="card"><strong><a href="https://www.mdpi.com/2673-4176/6/4/95" target="_blank">
+      Shedding Light on Carob Seeds</a></strong>
+      <p>A Non-Destructive Approach to Assess Dehusking Efficiency Using Diffuse Reflectance Spectroscopy and Kubelka-Munk Theory</p></div>
+    <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S092552142300042X" target="_blank">
+      SpectraNet-32</a></strong>
+      <p>Estimation of soluble solids content and fruit temperature in'Rocha'pear using Vis-NIR spectroscopy and the SpectraNet-32 deep learning architecture</p></div>
+  </div>
+
+  <div class="section-title" id="news">
+    <h2>News & Updates</h2>
+    <p>Follow the lab cadence.</p>
+  </div>
+  <div class="card-grid news-grid">
+    <div class="card"><p class="tag">Closing project</p><br><strong>SensAIFood</strong><p>IG19145 - Artificial intelligence methods for spectral data processing to solve food fraud and authenticity issues (SensAIfood)</p></div>
+    <div class="card"><p class="tag">Funding</p><br><strong>Preparing FCT proposal</strong><p>Preparing proposal for R&D Projects in All Scientific Domains 2025 on the subject of spectral datasets and interpretable AI.</p></div>
+    <!-- <div class="card"><p class="tag">Collaborations</p><br><strong>Academic</strong><p>University of Cordoba, Wageningen University</p></div> -->
+    <div class="card"><p class="tag">Donations</p><br><strong>Looking for hardware donations</strong><p>We are accepting donations for a consumer grade high end GPU (RTX 5090 or RTX 6000 PRO) to power our research</p></div>
+    
+  </div>
+
+  <div class="section-title" id="team">
+    <h2>Team</h2>
+    <p>Hands-on and interdisciplinary.</p>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px,1fr));">
+    <div class="card"><strong>Dário Passos</strong><p> Non-linear optics, deep learning for NIR spectral analysis, deep chemometrics.</p></div>
+    <div class="card"><strong>Rui Guerra</strong><p> NIR Spectroscopy, signal processing, Chemometrics, hardware deployment.</p></div>
+    <div class="card"><strong>Jaime Martins</strong><p> Data curation, deep learning, machine learning, benchmarking.</p></div>
+  </div>
+
+  <div class="section-title" id="acknowledgements">
+    <h2>Acknowledgements</h2>
+    <p>Support and collaborations that power the lab.</p>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
+    <div class="card"><strong><a href="https://www.linkedin.com/in/eur-ing-fotis-georgatos/" target="_blank">Eur. ing. Fotis Georgatos</a></strong>
+      <p>We are very thankful to Eur. ing. Fotis Georgatos for the donation of SSDs for our storage needs.</p></div>
+    <!-- <div class="card"><strong>Funding & Grants</strong><p>Past and pending proposals with FCT, Horizon Europe, ERC, and EIC Pathfinder programs.</p></div>
+    <div class="card"><strong>Partners & Collaborators</strong><p>Agri-food producers, biomedical groups, and optics teams co-developing open spectral datasets and pilots.</p></div> 
+  -->
+  </div>
+
+  <footer class="footer" id="contact">
+    <div class="footer-inner">
+      <div class="brand" style="color:#e8f1ff;">
+        <img src="logo.png" alt="DeepLight Lab logo white" style="height:48px;">
+        <span>DeepLight Lab</span>
+      </div>
+      <div>
+        <p>Last updated 20/11/2025.</p>
+      </div>
+      <div class="contact">
+        <p><strong>Contact</strong></p>
+        <p>Email: <a href="mailto:dmpassos@ualg.pt">dmpassos@ualg.pt</a></p>
+        <p>Assistant professor, Physics Department, Faculty of Sciences and Technology, University of Algarve</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector('.nav-toggle');
+    const navList = document.querySelector('nav ul');
+    if (toggle && navList) {
+      toggle.addEventListener('click', () => navList.classList.toggle('open'));
+    }
+  </script>
+</body>
+</html>
