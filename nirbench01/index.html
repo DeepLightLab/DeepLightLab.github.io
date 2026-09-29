@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NIRBENCH: a reproducible comparison of deep learning, TabPFN-3.5 and PLS for quantitative near-infrared spectroscopy, from DeepLight Lab.">
+  <title>NIRBENCH · DeepLight Lab</title>
+  <link rel="icon" href="assets/lab-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="#top"><img src="assets/lab-logo.png" alt=""><span>DeepLight <b>Lab</b><small>University of Algarve</small></span></a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation">☰</button>
+      <nav id="main-nav" aria-label="Main navigation">
+        <a href="#datasets">Datasets</a><a href="#protocol">Protocol</a><a href="#models">Models</a><a class="nav-cta" href="#results">Explore results <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="hero-inner wrap">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="status-dot"></span> NIRBENCH · Benchmark v0.1</div>
+          <h1>Deep learning<br>for <em>NIR spectra</em></h1>
+          <p class="hero-lead">NIRBENCH compares how well deep learning architectures designed for NIR spectral analysis, generalize across different chemometric tasks. <b>Version 0.1 compares out-of-the-box performance (no hyperparameter optimization)</b> with two baselines: a fully optimized PLS (preprocessing and LV) and the TabPFN-3.5 foundation model. </p>
+          <div class="hero-actions"><a href="#results" class="button primary">Explore the benchmark <span aria-hidden="true">↗</span></a><a href="assets/benchmark-report.pdf" class="hero-link" target="_blank" rel="noopener">Read the summary report <span aria-hidden="true">↗</span></a></div>
+          <p class="hero-note">Fixed test sets. Training-only model selection. Repeated evaluation.</p>
+        </div>
+        <div class="spectra-panel">
+          <div class="panel-top"><span class="micro-label">THE INPUT</span><span class="signal-label">NIR / VIS–NIR</span></div>
+          <div id="hero-spectra" class="hero-spectra" aria-label="Eight measured wheat-flour training spectra"></div>
+          <div class="spectra-caption"><span>Wheat flour</span><span>Eight training spectra · values as stored</span></div>
+          <div class="signal-flow"><span>Spectral measurements</span><span aria-hidden="true">→</span><span>Regression model</span><span aria-hidden="true">→</span><strong>Property estimate</strong></div>
+        </div>
+      </div>
+      <div class="hero-stats wrap">
+        <div><strong>30</strong><span>dataset configurations (more coming soon)</span></div><div><strong>13</strong><span>DL architectures (more coming)</span></div><div><strong>10</strong><span>final seeds per DL / TabPFN-3.5 model</span></div><div><strong>+2</strong><span>PLS & TabPFN-3.5 baselines</span></div>
+      </div>
+    </section>
+
+    <section id="results" class="section wrap">
+      <div class="section-heading"><div><p class="eyebrow blue">01 / THE EVIDENCE</p><h2>Explore the results</h2><p>Compare overall consistency, inspect an individual task, or scan the full result matrix. If you want can also check our <a href="https://github.com/DeepLightLab/NIRBENCH_DL_v0.1" target="_blank">github NIRBENCH_DL_v0.1 repository</a> and run the benchmark yourself.</p></div><div class="snapshot"><span id="connection" class="pill">Saved snapshot</span><small id="updated"></small><button id="refresh" class="text-button">Refresh results ↻</button></div></div>
+      <div id="coverage" class="coverage" aria-live="polite"></div>
+      <div id="data-warning" class="notice" hidden></div>
+      <div class="explorer">
+        <div class="explorer-head">
+          <div class="tabs" role="tablist" aria-label="Results views"><button id="tab-overview" role="tab" aria-selected="true" aria-controls="overview" data-tab="overview">Across datasets</button><button id="tab-detail" role="tab" aria-selected="false" aria-controls="detail" data-tab="detail" tabindex="-1">Dataset detail</button><button id="tab-matrix" role="tab" aria-selected="false" aria-controls="matrix" data-tab="matrix" tabindex="-1">RMSE matrix</button></div>
+          <label class="compact-label">Domain <select id="result-domain"><option value="all">All domains</option></select></label>
+        </div>
+        <div id="overview" class="tab-panel" role="tabpanel" aria-labelledby="tab-overview">
+          <div class="view-intro"><div><h3>Consistency across tasks</h3><p>Each dataset has equal weight. Higher rank score is better.</p></div><div class="switches"><label><input id="include-pls" type="checkbox" checked> Include PLS</label><label><input id="include-tabpfn" type="checkbox" checked> Include TabPFN-3.5</label></div></div>
+          <div id="comparison-note" class="comparison-note"></div>
+          <div class="ranking-layout"><div><div id="ranking-chart" class="ranking-chart"></div></div><aside class="ranking-aside"><p class="micro-label">HOW TO READ THIS</p><h4>A common scale for different targets.</h4><p>Rank models by test RMSE within each dataset, convert each rank to a 0–100 score, then average across shared datasets.</p><div class="formula">100 × (M − rank) / (M − 1)</div><p class="small">M is the number of models included. Ties receive an average rank. A score of 100 means first place on every dataset in this comparison.</p><div class="aside-divider"></div><p class="small">Changing the number of models displayed changes the score. The default reproduces the original 13-architecture comparison. </p></aside></div>
+          <details class="exact-values"><summary>Exact scores, R² and recorded runtime</summary><div class="table-scroll"><table id="ranking-table"><caption class="sr-only">Overall comparison on shared datasets</caption><thead><tr><th scope="col">Model</th><th scope="col">Rank score ↑</th><th scope="col">Mean rank ↓</th><th scope="col">Mean R² ↑</th><th scope="col">Datasets</th><th scope="col">Time / run (s)</th></tr></thead><tbody></tbody></table></div><p class="chart-note">Time / run is comparative: all recorded runtimes were measured locally on a PC workstation with a 13th Gen Intel® Core™ i9-13900K CPU and an NVIDIA GeForce RTX 2080 Ti GPU (11 GB). DL timing includes one final fit at the selected epoch count plus train and test prediction; TabPFN-3.5 timing includes fit and test prediction; PLS timing covers its five-fold joint preprocessing and latent-variable optimization.</p></details>
+        </div>
+        <div id="detail" class="tab-panel" role="tabpanel" aria-labelledby="tab-detail" hidden>
+          <div class="view-intro"><label class="select-label">Dataset<select id="detail-dataset"></select></label><label class="select-label">Metric<select id="detail-metric"><option value="rmse">Test RMSE · lower is better</option><option value="r2">Test R² · higher is better</option></select></label></div>
+          <div id="dataset-context" class="dataset-context"></div>
+          <div id="detail-chart" class="detail-chart"></div>
+          <p class="chart-note">Markers show the mean across final seeds; whiskers show ±1 sample standard deviation, not confidence intervals. PLS is one fit with no run standard deviation. All RMSE values use the target’s original units.</p>
+          <details class="exact-values"><summary>Exact measurements and source files</summary><div class="table-scroll"><table id="detail-table"><caption class="sr-only">Per-model results for the selected dataset</caption><thead><tr><th scope="col">Model</th><th scope="col">Test RMSE</th><th scope="col">Test R²</th><th scope="col">Runs</th><th scope="col">Selected configuration</th><th scope="col">Source</th></tr></thead><tbody></tbody></table></div></details>
+        </div>
+        <div id="matrix" class="tab-panel" role="tabpanel" aria-labelledby="tab-matrix" hidden>
+          <div class="view-intro"><div><h3>Test RMSE, task by task</h3><p>All models. Lower values are better within a row. Select a dataset name for its detailed comparison.</p></div><span class="matrix-key"><i></i> Best available result</span></div>
+          <div class="table-scroll matrix-scroll" tabindex="0" aria-label="RMSE matrix, scroll horizontally to view all models"><table id="matrix-table"></table></div>
+          <p class="chart-note">Shading encodes rank within each dataset, not error magnitude across datasets. Bold values identify the best available RMSE. A dash means no completed result is available in this snapshot.</p>
+        </div>
+        <div class="explorer-footer"><span id="view-scope"></span><button id="download" class="text-button">Download this view · CSV ↓</button></div>
+      </div>
+    </section>
+
+    <section id="datasets" class="section section-tint"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow blue">02 / THE DATA</p><h2>Thirty datasets. Many spectral settings.</h2><p>From grain protein to fruit dry matter, each configuration keeps its own spectral grid and fixed train/test split. Future versions of NIRBENCH will expand the number of datasets.</p></div></div>
+      <div id="domain-cards" class="domain-cards"></div>
+      <div class="dataset-browser"><div class="dataset-tools"><label class="search-label"><span aria-hidden="true">⌕</span><input id="dataset-search" type="search" placeholder="Search material, target or dataset…" aria-label="Search datasets"></label><span id="dataset-count" class="muted"></span></div><div class="table-scroll"><table id="dataset-table"><thead><tr><th scope="col">Dataset / target</th><th scope="col">Domain</th><th scope="col">Train</th><th scope="col">Test</th><th scope="col">Channels</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead><tbody></tbody></table></div></div>
+      <p class="section-note">Counts are taken from the cleaned arrays used by the benchmark loader. These are 30 configurations, not 30 necessarily independent sample collections: several share material, samples, or acquisition settings. </p>
+    </div></section>
+
+    <section id="protocol" class="section wrap">
+      <div class="section-heading"><div><p class="eyebrow blue">03 / THE PROTOCOL</p><h2>One test split. A clear comparison.</h2><p>Model selection happens inside the training data. Held-out test labels are used only for final evaluation.</p></div></div>
+      <div class="protocol-grid"><article class="protocol-step"><span class="step-number">01</span><h3>Load fixed splits</h3><p>Use the same stored training and test samples for every model. The shared loader removes ID columns and rows with missing values.</p></article><article class="protocol-step"><span class="step-number">02</span><h3>Transform from training data</h3><p>DL and TabPFN-3.5 use training-fitted standardization. PLS evaluates spectral preprocessing inside CV; MSC references and PLS scaling use only each fold’s training rows.</p></article><article class="protocol-step"><span class="step-number">03</span><h3>Fit, then repeat</h3><p>DL models and TabPFN-3.5 use ten final seeds, 12345–12354, on the full training split. PLS uses one final fit after preprocessing and latent-variable selection.</p></article><article class="protocol-step"><span class="step-number">04</span><h3>Score in original units</h3><p>Predictions are expressed in the original target units before computing RMSE and R². DL and TabPFN-3.5 report mean and sample standard deviation across final runs.</p></article></div>
+      <div class="protocol-variants"><article><span class="pill">13 DL architectures</span><h3>CV chooses the epoch budget</h3><p>Five shuffled folds, seed 12345. Record the best validation-loss epoch in each fold, then use their median. CV allows up to 600 epochs with early-stopping patience 100.</p><p>The ten final fits use that fixed budget, with no validation split or early stopping. Model-specific optimizers and schedules are retained. There is no full hyperparameter optimization for the DL architectures and they are instantiated with the original paper's hyperparameters (out-of-the-box evaluation).</p></article><article><span class="pill aqua">TabPFN-3.5</span><h3>Pretrained weights, full context</h3><p>No cross-validation or epoch selection. The full standardized training set becomes context for the pretrained regressor. Ten seeds vary its internal ensemble.</p><p>Its training metrics are left empty because those labels are in the model’s context. Test metrics use the same output schema as the DL models.</p></article><article><span class="pill neutral">PLS regression</span><h3>CV chooses preprocessing and latent variables</h3><p>The golden standard of chemometrics. Five-fold training-set CV jointly searches nine variants: raw spectra, SNV, MSC, first/second Savitzky–Golay derivatives, and SNV/MSC followed by either derivative. Each variant searches 1–20 latent variables.</p><p>The pair with the lowest pooled out-of-fold RMSE is fitted on the full training split. Test RMSE and R² are reported for this single final fit.</p></article></div>
+      <details class="method-notes"><summary>What to keep in mind when reading the results</summary><div><p><strong>Run variability:</strong> standard deviation describes variation across model seeds on a fixed split. It does not measure uncertainty across new sample collections or alternative test splits.</p><p><strong>Predictions and plots:</strong> saved prediction files and scatter plots represent the last final run. The metric tables summarize all final runs. Note that individual model hyperparameter optimization on a given dataset (not done here) is bound to improve its performance.</p><p><strong>Common input, architecture-specific processing:</strong> For all DL models and TabPFN, the input data are feature-wise (spectra) and target (y) standardizated. CNNs add a channel dimension; MarkSpectra selects wavelength marks; TabPFN-3.5 also uses internal preprocessing. A dataset may already contain preprocessing, such as the SNV pear configuration.</p><p><strong>Scope:</strong> performance describes these fixed splits and benchmark implementations. The architecture comparison does not establish that one model is best for all spectroscopy tasks. The objective of the benchmark is to compare how different DL architectures generalize to different chemometric tasks (indepemdently of their performance on a specific dataset).</p></div></details>
+    </section>
+
+    <section id="models" class="section section-tint"><div class="wrap"><div class="section-heading"><div><p class="eyebrow blue">04 / THE MODELS</p><h2>Neural network implementations using tensorflow/keras.</h2><p>Thirteen implemented DL architectures based on their original papers, a classical reference, and a pretrained tabular model. ResidualSpectra, Spectraformer and SpectraTr were adapted for regression pursposes. 1D-CNNs are presented in three different variants. Each model is an independent python file that you can download and try on your own data. You have read about DeepSpectra or SpectraNet32? Now you can test those models on your data.</p></div><label class="compact-label">Family<select id="model-family"><option value="all">All families</option><option>CNN</option><option>Dense</option><option>Attention</option><option>Foundation</option><option>Classical</option></select></label></div><div id="model-grid" class="model-grid"></div></div></section>
+
+    <section class="section wrap future-versions"><div><p class="eyebrow blue">FUTURE VERSIONS</p><h2>Measure how models generalize...</h2><p>The main purpose of NIRBENCH is to curate a large pool of datasets / chemometric tasks based on publicly available data, and guidelines that researchers can use to test their DL models aimed at spectral analysis in the NIR (and other spectra) range. We also implemented and share several DL models published in the area of NIR Chemomemtrics as a starting point for the benchmark. Many of these models are described in their original paper but a ready to use implementation is not usually offered by the authors. Now you can simply download the model .py file and test it on your own data with a bit of extra coding. Over subsequent versions of NIRBENCH, we will share the implementation of more DL architectures and will increase the number of datasets. We also plan to build an optimization pipeline (HPO) that can be applied to all DL models, in order to improve their general performance. This is already in motion as a partneship with colleagues from LabCom Aiol (Artificial Intelligence and Optics Laboratory) and ChemHouse Research Group from UMR ITAP (INRAE) . </p>
+	
+	<p>Current results indicate that TabPFN-3.5 (a foundation model developed for tabular data) provides better (out-of-the-box) performance in NIR based prediction than most DL architecture-specifics built for NIR analysis and even an optimized PLS. This is very interesting because TabPFN was not specifically designed for the highly collinear and structured nature of spectral data, yet it has shown surprisingly strong performance across multiple chemometric datasets. Based on <a href="https://arxiv.org/abs/2605.21544" target="_blank">Reiter et al 2026</a>, a previous version of TabPFN also seems to perform better for this type of data than other ML models usually strong at regression tasks. Priors are important...</p></div>
+	<!--
+	<div class="resource-box"><a href="assets/benchmark-report.pdf" target="_blank" rel="noopener"><span>Updated benchmark report<small>PDF · DL, PLS and TabPFN-3.5 results</small></span><span aria-hidden="true">↗</span></a><a href="data.json" download><span>Complete data snapshot<small>JSON · metrics, coverage and provenance</small></span><span aria-hidden="true">↓</span></a><button id="all-csv"><span>All available measurements<small>CSV · includes source filenames</small></span><span aria-hidden="true">↓</span></button></div>
+	-->
+	</section>
+  </main>
+  <footer><div class="wrap footer-inner"><div class="brand"><img src="assets/lab-logo.png" alt=""><span>DeepLight Lab<small>Deep learning from deep light.<br><span>Physics Department · University of Algarve</span></small></span></div><div style="width: 80%; margin: 0 auto;"><p><span>Disclamer: NIRBENCH v0.1 is a research software under active development. It may contain bugs, incomplete features, implementation errors, or other inaccuracies. The neural-network models are local interpretations of architectures described in the cited publications and may differ from the original authors’ implementations.
+  The software, model implementations, benchmark results, and predictions are provided “as is,” without warranties of correctness, reliability, fitness for a particular purpose, or suitability for commercial, industrial, clinical, regulatory, safety-critical, or other operational use.
+Users are solely responsible for reviewing the code, validating models on suitable independent data, assessing applicable requirements, and determining whether the software and its outputs are appropriate for their intended use. Models and predictions should not be applied without appropriate verification and validation.
+
+To the extent permitted by applicable law, DeepLightLab and the project contributors disclaim liability for any loss, damage, commercial harm, or other consequences arising from the use, misuse, inability to use, or reliance upon this software, its model implementations, benchmark results, or predictions. See the Apache License 2.0 (LICENSE) for the applicable warranty disclaimer and limitation of liability.</span></p></div><a href="mailto:dmpassos@ualg.pt">Contact the lab ↗</a></div></footer>
+  <noscript><p class="notice">Enable JavaScript to explore the saved benchmark measurements. Dataset and model information is also available in the PDF report.</p></noscript>
+</body>
+</html>
