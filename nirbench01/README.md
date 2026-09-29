@@ -46,7 +46,7 @@ The Python files are only needed for local export and preview.
 
 ## Content and comparison rules
 
-- **Results:** original 13-model ranking, optional PLS and TabPFN-3.5 inclusion,
+- **Results:** 15-model ranking with PLS and TabPFN-3.5 enabled by default, controls to exclude either baseline,
   domain filters, per-dataset RMSE/R² plots with run standard deviations,
   a complete RMSE matrix, and CSV/JSON downloads.
 - **Datasets:** all 30 configurations, material/target/domain labels and cleaned
@@ -60,11 +60,11 @@ The Python files are only needed for local export and preview.
 - **Sources:** updated PDF, downloadable snapshot, and source paths carried with
   each result. The PDF is copied from `Report/report.pdf` after compilation.
 
-The default ranking includes only the original 13 DL architectures. For a selected
+The default ranking includes all 13 DL architectures plus PLS and TabPFN-3.5. For a selected
 model set and domain, every ranked model uses the **same intersection of completed
 datasets**. Ranks are calculated within each dataset from mean test RMSE; ties get
 average ranks. Scores are `100 × (M − rank)/(M − 1)`, averaged across those datasets.
-Including PLS or TabPFN-3.5 changes M and therefore the scores.
+Excluding PLS or TabPFN-3.5 changes M and therefore the scores.
 
 The page does not average raw RMSE across targets with different units. Dataset
 plots and the matrix use original target units. Whiskers are ±1 sample standard
