@@ -12,6 +12,7 @@
       --ink: #0b1f33;
       --blue: #0f4c81;
       --aqua: #00c2c7;
+	  --darkred: #f8e9ed;
       --mist: #f5f7fb;
       --card: #ffffff;
       --muted: #4c5f73;
@@ -177,6 +178,57 @@
       font-weight: 700;
       font-size: 0.85rem;
     }
+    /* Publications: optional "new" highlight + date stamp */
+    .publication-grid .card { display: flex; flex-direction: column; }
+    .card.is-new {
+      border-color: rgba(0,194,199,0.45);
+      box-shadow: 0 15px 45px rgba(0,194,199,0.18);
+      background: linear-gradient(180deg, rgba(0,194,199,0.06), var(--card) 45%);
+    }
+    .card.is-new > strong a {
+      color: var(--blue);
+      background-image: linear-gradient(90deg, var(--aqua), var(--accent));
+      background-size: 100% 3px;
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      padding-bottom: 2px;
+    }
+    .card.is-new > strong::before {
+      content: "NEW";
+      display: block;
+      width: fit-content;
+      margin-bottom: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--aqua);
+      color: #fff;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+    }
+	.card.is-new-red > strong::before {
+      content: "NEW";
+      display: block;
+      width: fit-content;
+      margin-bottom: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--darkred);
+      color: #b42346;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+    }
+    .card-date {
+      margin-top: auto;
+      align-self: flex-end;
+      font-size: 0.75rem;
+      color: var(--muted);
+      opacity: 0.8;
+      font-variant-numeric: tabular-nums;
+    }
+    .tag-red {
+      background: rgba(180,35,70,0.10);
+      color: #b42346;
+    }
     .footer {
       background: #0a1625;
       color: #e8f1ff;
@@ -320,30 +372,44 @@
     <p>Selected recent highlights.</p>
   </div>
   <div class="card-grid publication-grid">
-  	<div class="card"><strong><a href="https://doi.org/10.1016/j.trac.2026.119015" target="_blank">
+	<div class="card is-new"><strong><a href="nirbench01/index.html" target="_blank">
+      NIRBENCH DL v0.1</a></strong>
+      <p>Explore the first release of our NIRBENCH, a benchmark for evaluating how deep learning architectures applied to NIR spectral analysis generalize across mutitple chemometric tasks.</p>
+	  <p><small> (under active development)</small></p>
+      <time class="card-date">30-09-26</time></div>
+  	<div class="card is-new"><strong><a href="https://doi.org/10.1016/j.trac.2026.119015" target="_blank">
       Chemometrics CNNs review</a></strong>
-      <p>Review in TrAC: Convolutional neural networks in Vis–NIR chemometrics: From contradiction to conditional design </p></div>
-	<div class="card"><strong><a href="https://arxiv.org/abs/2607.25636" target="_blank">
+      <p>Review in TrAC: Convolutional neural networks in Vis–NIR chemometrics: From contradiction to conditional design </p>
+      <time class="card-date">16-07-26</time></div>
+	<div class="card is-new-red"><strong><a href="https://arxiv.org/abs/2607.25636" target="_blank">
       Spectral priors for CNN design</a></strong>
-      <p>Using Data-Derived Priors to Guide CNN Architecture Design for NIR Chemometrics </p></div>
+      <p>Using Data-Derived Priors to Guide CNN Architecture Design for NIR Chemometrics </p>
+	  <p><small> arvix preprint (under review)</small></p>
+      <time class="card-date">28-07-26</time></div>
     <div class="card"><strong><a href="https://github.com/dario-passos/DeepLearning_for_VIS-NIR_Spectra" target="_blank">
       DeepLearning for VIR-NIR Spectra</a></strong>
-      <p>A github repository with some of the code we develop and publish</p></div>
+      <p>A github repository with some of the code we develop and publish</p>
+      <time class="card-date">since 2020</time></div>
     <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S0169743923002733" target="_blank">
       Deep Tutti-Frutti</a></strong>
-      <p> Exploring CNN architectures for dry matter prediction in fruit from multi-fruit near-infrared spectra</p></div>
+      <p> Exploring CNN architectures for dry matter prediction in fruit from multi-fruit near-infrared spectra</p>
+      <time class="card-date">15-12-23</time></div>
     <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S1386142525003749" target="_blank">
       Deep Tutti-Frutti II</a></strong>
-      <p> Explainability of CNN architectures for fruit dry matter predictions</p></div>
+      <p> Explainability of CNN architectures for fruit dry matter predictions</p>
+      <time class="card-date">05-09-25</time></div>
     <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S0169743922000314" target="_blank">
       Tutorial on hyperparameter tuning</a></strong>
-      <p> A tutorial on automatic hyperparameter tuning of deep spectral modelling for regression and classification tasks</p></div>      
+      <p> A tutorial on automatic hyperparameter tuning of deep spectral modelling for regression and classification tasks</p>
+      <time class="card-date">15-04-22</time></div>      
     <div class="card"><strong><a href="https://www.mdpi.com/2673-4176/6/4/95" target="_blank">
       Shedding Light on Carob Seeds</a></strong>
-      <p>A Non-Destructive Approach to Assess Dehusking Efficiency Using Diffuse Reflectance Spectroscopy and Kubelka-Munk Theory</p></div>
+      <p>A Non-Destructive Approach to Assess Dehusking Efficiency Using Diffuse Reflectance Spectroscopy and Kubelka-Munk Theory</p>
+      <time class="card-date">19-10-25</time></div>
     <div class="card"><strong><a href="https://www.sciencedirect.com/science/article/pii/S092552142300042X" target="_blank">
       SpectraNet-32</a></strong>
-      <p>Estimation of soluble solids content and fruit temperature in'Rocha'pear using Vis-NIR spectroscopy and the SpectraNet-32 deep learning architecture</p></div>
+      <p>Estimation of soluble solids content and fruit temperature in'Rocha'pear using Vis-NIR spectroscopy and the SpectraNet-32 deep learning architecture</p>
+      <time class="card-date">02-05-23</time></div>
   </div>
 
   <div class="section-title" id="news">
@@ -351,11 +417,10 @@
     <p>Follow the lab cadence.</p>
   </div>
   <div class="card-grid news-grid">
-	<div class="card"><p class="tag">Benchmark</p><br><strong>NIRBENCH DL v0.1</strong><p>Explore the first release of NIRBENCH, a benchmark for evaluating deep learning architectures applied to NIR spectral analysis. See the initial results for <a href="nirbench01/index.html" target="_blank" rel="noopener">NIRBENCH_DL_v0.1</a>.</p></div>
     <div class="card"><p class="tag">Funded Project</p><br><strong>FCT-RCNA A1 project</strong><p>Computational project 2025.12264.CPCA.A1 running on Deucalion HPC: Benchmark of deep learning models for NIR chemometrics.</p></div>
 	<div class="card"><p class="tag">Equipment</p><p>Our lab now has access to a NIREOS HERA VNIR hyperspectral camera and a NIREOS TRICLOPS spectrometer.</p></div>
 	<div class="card"><p class="tag">Closing project</p><br><strong>SensAIFood</strong><p>IG19145 - Artificial intelligence methods for spectral data processing to solve food fraud and authenticity issues (SensAIfood)</p></div>
-    <div class="card"><p class="tag">Donations</p><br><strong>Open to hardware donations</strong><p>We are accepting donations of consumer-grade, mid- to high-end GPUs (RTX 3090, RTX 4090, RTX 5090 or RTX 6000 PRO) to support our research.</p></div>
+    <div class="card"><p class="tag tag-red">Donations</p><br><strong>Open to hardware donations</strong><p>We are accepting donations of consumer-grade, mid- to high-end GPUs (RTX 3090, RTX 4090, RTX 5090 or RTX 6000 PRO) to support our research.</p></div>
     
   </div>
 
@@ -400,11 +465,14 @@
   </div>
   <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
      <div class="card">
-      <strong><a href="https://www.amd.com/en/corporate/university-program/enroll.html" target="_blank">AMD University Program</a></strong>
-      <p>We would like to acknowledge the support from AMD University Program for the donation of hardware resources to our lab (1 AI PC, Minisforum X1 PRO), (February 2026).</p>
-      
-      <strong><a href="https://www.linkedin.com/in/eur-ing-fotis-georgatos/" target="_blank">Eur. ing. Fotis Georgatos</a></strong>
-      <p>We are very thankful to Eur. ing. Fotis Georgatos for the donation of SSDs for our storage needs (November 2025).</p>
+	  <strong><a href="https://claude.com/docs/claude-science/overview" target="_blank">Claude Science</a></strong><br>
+      <span>We would like thanks Anthropic for granting us free access to Claude Science (10 seats for the team) <small>(September 2026)</small>.</span>
+	  <p></p>
+      <strong><a href="https://www.amd.com/en/corporate/university-program/enroll.html" target="_blank">AMD University Program</a></strong><br>
+      <span>We would like to acknowledge the support from AMD University Program for the donation of hardware resources to our lab (1 AI PC, Minisforum X1 PRO), <small>(February 2026)</small>.</span>
+      <p></p>
+      <strong><a href="https://www.linkedin.com/in/eur-ing-fotis-georgatos/" target="_blank">Eur. ing. Fotis Georgatos</a></strong><br>
+      <span>We are very thankful to Eur. ing. Fotis Georgatos for the donation of SSDs for our storage needs <small>(November 2025)</small>.</span>
       
       
      </div>
@@ -420,7 +488,7 @@
         <span>DeepLight Lab</span>
       </div>
       <div>
-        <p>Last updated 31/07/2026.</p>
+        <p>Last updated 30/09/2026.</p>
       </div>
       <div class="contact">
         <p><strong>Contact</strong></p>
