@@ -55,6 +55,9 @@
     $('updated').textContent = `Updated ${new Date(data.generatedAt).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}`;
     $('connection').textContent = live ? 'Live local results · 30 s' : 'Saved snapshot';
     $('connection').classList.toggle('aqua',live);
+    const olderMango = data.results.filter(r => r.predatesCurrentSplit);
+    $('split-warning').hidden = !olderMango.length;
+    $('split-warning').textContent = 'Some result files predate their dataset files. Verify or recompute these measurements before comparing models.';
     $('data-warning').hidden = !data.warnings.length;
     $('data-warning').textContent = `${data.warnings.length} source file(s) could not be read completely. Their results are omitted; refresh after the current write finishes. See the JSON snapshot for details.`;
   }
@@ -83,6 +86,8 @@
     const result=calculateRanking(data.results,models,scope.map(d=>d.id));
     currentRanking=result.rows;commonDatasets=result.common;
     $('comparison-note').textContent=`${models.length} models · ${result.common.length} shared datasets out of ${scope.length} in this domain. `+(result.common.length<scope.length?'Datasets with any missing model result are excluded from this comparison.':'Every included model has results on the same datasets.');
+    if (data.results.some(r => r.predatesCurrentSplit && models.includes(r.model) && result.common.includes(r.dataset)))
+      $('comparison-note').textContent += ' Some result files predate their dataset files; verify them before comparing models.';
     $('ranking-chart').innerHTML=result.rows.length?result.rows.map(r=>{
       const model=modelById.get(r.model);
       return `<div class="rank-row ${model.family==='Classical'?'reference':model.family==='Foundation'?'foundation':''}"><span class="rank-label">${escape(model.name)}</span><div class="rank-bar-track" role="img" aria-label="${escape(model.name)}: rank score ${format(r.score,2)} of 100"><div class="rank-bar" style="width:${Math.max(0,Math.min(100,r.score))}%"></div></div><span class="rank-value">${format(r.score,1)}</span></div>`;
@@ -102,6 +107,8 @@
     const rows=data.results.filter(r=>r.dataset===d.id).sort((a,b)=>metric==='rmse'?a.rmse-b.rmse:b.r2-a.r2);
     const missing=data.models.filter(m=>!rowFor(d.id,m.id));
     $('dataset-context').innerHTML=`<span><b>${escape(d.target)}</b> · ${escape(d.domain)}</span><span>${d.train.toLocaleString()} train / ${d.test.toLocaleString()} test</span><span>${d.features} channels</span><span>${rows.length} / ${data.models.length} models available</span>${missing.length?`<span>Awaiting: ${missing.map(m=>escape(m.name)).join(', ')}</span>`:''}`;
+    if (rows.some(r => r.predatesCurrentSplit))
+      $('dataset-context').innerHTML += '<span><strong>Check results:</strong> some result files predate this dataset’s files.</span>';
     const vals=rows.flatMap(r=>[r[metric]-(r[metric+'Std']??0),r[metric]+(r[metric+'Std']??0)]);
     let lo=Math.min(0,...vals),hi=Math.max(0,...vals);if(lo===hi)hi=lo+1;
     const span=hi-lo;hi+=span*.06;if(lo<0)lo-=span*.04;

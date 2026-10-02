@@ -136,6 +136,14 @@ def collect_results(dataset_ids):
     keys = [(r["dataset"], r["model"]) for r in rows]
     if len(keys) != len(set(keys)):
         raise ValueError("duplicate model/dataset measurements")
+    for row in rows:
+        task_number = int(row["dataset"].split("-", 1)[0])
+        if not 22 <= task_number <= 25:
+            continue
+        newest_split = max((ROOT / "datasets" / row["dataset"] / f"data_{split}.csv").stat().st_mtime_ns
+                           for split in ("train", "test"))
+        row["predatesCurrentSplit"] = (ROOT / row["source"]).stat().st_mtime_ns < newest_split
+        row["splitStatus"] = "previous split" if row["predatesCurrentSplit"] else "current split"
     return rows, warnings
 
 
@@ -165,7 +173,7 @@ def build_snapshot():
             "results": rows, "hero": hero, "warnings": warnings,
             "provenance": {
                 "measurements": "Per-dataset results/<model>/*_metrics.csv; PLS from pls_baseline_benchmark.cvs",
-                "population": "30 fixed train/test dataset configurations. Some share samples, targets or instruments.",
+                "population": "30 task configurations. Mango tasks 22–25 use seed-42 80/20 splits of inferred fruit groups (equal DM within each season). Some tasks share samples, targets or instruments.",
                 "uncertainty": "Sample standard deviation across final seeded runs, not a confidence interval. PLS is one fit.",
                 "ranking": "Mean of 100 × (M − rank)/(M − 1), with average ties, on shared datasets only.",
                 "time": "Comparative wall time measured on a common Windows 11 workstation (Intel Core i9-13900K and NVIDIA GeForce RTX 2080 Ti, WSL2, TensorFlow 2.20). DL records each final fit plus train/test prediction; TabPFN-3.5 records fit plus test prediction; PLS records its five-fold joint preprocessing and latent-variable optimization.",
