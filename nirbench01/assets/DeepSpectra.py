@@ -141,8 +141,7 @@ def deepspectra_model(input_vector_dimension,
     dropout2 = Dropout(dropout_rate)(bn2)
 
     # Output Layer (1 neuron for regression, linear activation)
-    output_layer = Dense(units=1)(dropout2)
-    output_layer = LeakyReLU()(output_layer) # Using LeakyReLU as per the paper, but could also use linear activation!
+    output_layer = Dense(units=1, activation="linear")(dropout2) # Using linear activation although the paper does not specify!
 
     # Create and return the model
     model = Model(inputs=input_layer, outputs=output_layer, name='DeepSpectra')
