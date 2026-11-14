@@ -9,3 +9,9 @@
 @media(max-width:420px){.hero h1{font-size:48px}.hero-actions{align-items:flex-start;flex-direction:column}.model-grid{grid-template-columns:1fr}.hero-stats{gap:20px 12px}.hero-stats>div{gap:10px}.signal-flow{font-size:8px;padding-inline:12px}.spectra-caption{padding-inline:14px;font-size:8px}.tabs{gap:17px}.tabs button{font-size:10px}.rank-label{font-size:8px}.rank-row{grid-template-columns:104px 1fr 35px;gap:7px}.rank-axis{margin-left:111px;margin-right:42px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 @media print{.site-header,.hero-actions,.snapshot,.explorer-footer,.switches,.nav-toggle{display:none}.hero{background:#0f2e4a!important;print-color-adjust:exact}.section{padding-block:25px}.wrap{width:100%}.explorer{box-shadow:none}.tab-panel{min-height:0}.section-tint{background:#fff}.model-card,.protocol-variants article{break-inside:avoid}.table-scroll{overflow:visible}.hero-inner{padding:30px}.hero-stats{padding:20px}.ranking-aside{display:none}.ranking-layout{display:block}}
+
+/* Distinguish the two tabular foundation baselines. */
+:root{--tabicl:#6f4aa5}.rank-row.tabicl .rank-bar{background:var(--tabicl)}.model-card.tabicl>.pill{background:var(--tabicl);border-color:var(--tabicl)}
+
+/* Let the hero grid shrink to narrow viewport widths. */
+.hero-inner>*{min-width:0}

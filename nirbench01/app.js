@@ -8,6 +8,7 @@
   const format = (x, digits = 3) => x == null || !Number.isFinite(x) ? '—' : x.toLocaleString('en-GB', {minimumFractionDigits:digits, maximumFractionDigits:digits});
   const mean = values => values.reduce((a,b) => a+b, 0) / values.length;
   const TABPFN_COLOR = '#8f3445';
+  const TABICL_COLOR = '#6f4aa5';
   let tab = 'overview', datasetDomain = 'all', live = false, refreshing = false;
   let index, modelById, datasetById, currentRanking = [], commonDatasets = [];
   const dlModels = () => data.models.filter(m => !['Foundation','Classical'].includes(m.family));
@@ -50,8 +51,11 @@
 
   function renderStatus() {
     const counts = new Map(data.models.map(m => [m.id,data.results.filter(r=>r.model===m.id).length]));
-    const n = counts.get('TabPFN35') || 0;
-    $('coverage').innerHTML = `<span><b>${dlModels().reduce((sum,m)=>sum+counts.get(m.id),0)} / ${13*data.datasets.length}</b> DL results</span><span><b>${counts.get('PLSRegression')} / ${data.datasets.length}</b> PLS results</span><span class="${n<data.datasets.length?'partial':''}"><b>${n} / ${data.datasets.length}</b> TabPFN-3.5 results · ${n<data.datasets.length?'partial coverage':'complete coverage'}</span>`;
+    const foundationCoverage = data.models.filter(m=>m.family==='Foundation').map(m=>{
+      const n=counts.get(m.id)||0;
+      return `<span class="${n<data.datasets.length?'partial':''}"><b>${n} / ${data.datasets.length}</b> ${escape(m.name)} results · ${n<data.datasets.length?'partial coverage':'complete coverage'}</span>`;
+    }).join('');
+    $('coverage').innerHTML = `<span><b>${dlModels().reduce((sum,m)=>sum+counts.get(m.id),0)} / ${dlModels().length*data.datasets.length}</b> DL results</span><span><b>${counts.get('PLSRegression')||0} / ${data.datasets.length}</b> PLS results</span>`+foundationCoverage;
     $('updated').textContent = `Updated ${new Date(data.generatedAt).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}`;
     $('connection').textContent = live ? 'Live local results · 30 s' : 'Saved snapshot';
     $('connection').classList.toggle('aqua',live);
@@ -82,6 +86,7 @@
     const models=dlModels().map(m=>m.id);
     if($('include-pls').checked) models.push('PLSRegression');
     if($('include-tabpfn').checked) models.push('TabPFN35');
+    if($('include-tabicl').checked && modelById.has('TabICLv2')) models.push('TabICLv2');
     const scope=scopedDatasets();
     const result=calculateRanking(data.results,models,scope.map(d=>d.id));
     currentRanking=result.rows;commonDatasets=result.common;
@@ -90,8 +95,8 @@
       $('comparison-note').textContent += ' Some result files predate their dataset files; verify them before comparing models.';
     $('ranking-chart').innerHTML=result.rows.length?result.rows.map(r=>{
       const model=modelById.get(r.model);
-      return `<div class="rank-row ${model.family==='Classical'?'reference':model.family==='Foundation'?'foundation':''}"><span class="rank-label">${escape(model.name)}</span><div class="rank-bar-track" role="img" aria-label="${escape(model.name)}: rank score ${format(r.score,2)} of 100"><div class="rank-bar" style="width:${Math.max(0,Math.min(100,r.score))}%"></div></div><span class="rank-value">${format(r.score,1)}</span></div>`;
-    }).join('')+'<div class="rank-axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>':'<p class="empty">No shared completed datasets for this comparison yet. Exclude TabPFN-3.5 or choose another domain.</p>';
+      return `<div class="rank-row ${model.family==='Classical'?'reference':model.family==='Foundation'?`foundation ${model.id==='TabICLv2'?'tabicl':''}`:''}"><span class="rank-label">${escape(model.name)}</span><div class="rank-bar-track" role="img" aria-label="${escape(model.name)}: rank score ${format(r.score,2)} of 100"><div class="rank-bar" style="width:${Math.max(0,Math.min(100,r.score))}%"></div></div><span class="rank-value">${format(r.score,1)}</span></div>`;
+    }).join('')+'<div class="rank-axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>':'<p class="empty">No shared completed datasets for this comparison yet. Adjust the baseline selections or choose another domain.</p>';
     $('ranking-table').querySelector('tbody').innerHTML=result.rows.map(r=>`<tr><td>${escape(modelById.get(r.model).name)}</td><td>${format(r.score,2)}</td><td>${format(r.rank,2)}</td><td>${format(r.r2,3)}</td><td>${r.datasets}</td><td>${format(r.seconds,1)}</td></tr>`).join('');
   }
 
@@ -119,7 +124,7 @@
     svg+=`<line x1="${x(0)}" x2="${x(0)}" y1="12" y2="${height-35}" stroke="#98adbe"/>`;
     rows.forEach((r,i)=>{
       const m=modelById.get(r.model),v=r[metric],std=r[metric+'Std'],cy=24+i*32;
-      const color=m.family==='Classical'?'#9b834e':m.id==='TabPFN35'?TABPFN_COLOR:'#2e638e';
+      const color=m.family==='Classical'?'#9b834e':m.id==='TabPFN35'?TABPFN_COLOR:m.id==='TabICLv2'?TABICL_COLOR:'#2e638e';
       const desc=`${m.name}: ${format(v,4)}${std==null?' (single fit)':` ± ${format(std,4)} standard deviation`}`;
       svg+=`<text x="${left-16}" y="${cy+4}" text-anchor="end" font-size="11" fill="#163651">${escape(m.name)}</text><g class="point" tabindex="0" role="img" aria-label="${escape(desc)}"><title>${escape(desc)}</title>`;
       if(std!=null)svg+=`<line x1="${x(v-std)}" x2="${x(v+std)}" y1="${cy}" y2="${cy}" stroke="${color}" stroke-width="2"/><path d="M${x(v-std)},${cy-5}v10 M${x(v+std)},${cy-5}v10" stroke="${color}" stroke-width="1.3"/>`;
@@ -182,7 +187,7 @@
       const sourceAria=upstream?'upstream source repository':'Python implementation';
       const code=`<a class="model-code-link" href="${escape(m.codeHref)}" target="_blank" rel="noopener" aria-label="Open ${escape(m.name)} ${sourceAria}">${sourceLabel} <span aria-hidden="true">↗</span></a>`;
       const citation=m.paperHref?`<a class="model-citation" href="${escape(m.paperHref)}" target="_blank" rel="noopener"><span class="citation-label">Original paper</span>${escape(m.citation)} <span aria-hidden="true">↗</span></a>`:`<p class="model-citation no-paper"><span class="citation-label">Provenance</span>${escape(m.citation)}</p>`;
-      return `<article class="model-card ${m.family==='Foundation'?'foundation':''}"><span class="pill ${m.family==='Foundation'?'aqua':m.family==='Classical'?'neutral':''}">${escape(m.family)}</span><h3><a href="${escape(m.codeHref)}" target="_blank" rel="noopener" aria-label="Open ${escape(m.name)} ${sourceAria}">${escape(m.name)}</a></h3><p class="subtitle">${escape(m.subtitle)}</p><p class="description">${escape(m.description)}</p><div class="model-card-links">${citation}${code}<small>Benchmark module: ${escape(m.source)}</small></div></article>`;
+      return `<article class="model-card ${m.family==='Foundation'?`foundation ${m.id==='TabICLv2'?'tabicl':''}`:''}"><span class="pill ${m.family==='Foundation'?'aqua':m.family==='Classical'?'neutral':''}">${escape(m.family)}</span><h3><a href="${escape(m.codeHref)}" target="_blank" rel="noopener" aria-label="Open ${escape(m.name)} ${sourceAria}">${escape(m.name)}</a></h3><p class="subtitle">${escape(m.subtitle)}</p><p class="description">${escape(m.description)}</p><div class="model-card-links">${citation}${code}<small>Benchmark module: ${escape(m.source)}</small></div></article>`;
     }).join('');
   }
 
@@ -217,7 +222,7 @@
       if(!response.ok)throw new Error('No snapshot available');
       const next=await response.json();
       if(next.schemaVersion!==1||!Array.isArray(next.results)||!Array.isArray(next.datasets))throw new Error('Invalid snapshot');
-      data=next;reindex();renderResults();
+      data=next;reindex();renderResults();renderModels();
     }catch(error){live=false;console.info('Using saved NIRBENCH snapshot:',error.message);}
     finally{renderStatus();refreshing=false;$('refresh').disabled=false;}
   }
@@ -233,7 +238,7 @@
       i=event.key==='Home'?0:event.key==='End'?2:(i+(event.key==='ArrowRight'?1:2))%3;showTab(keys[i],true);
     });
   });
-  ['result-domain','include-pls','include-tabpfn'].forEach(id=>$(id).addEventListener('change',renderResults));
+  ['result-domain','include-pls','include-tabpfn','include-tabicl'].forEach(id=>$(id).addEventListener('change',renderResults));
   ['detail-dataset','detail-metric'].forEach(id=>$(id).addEventListener('change',()=>{renderDetail();updateScope();}));
   $('dataset-search').addEventListener('input',renderDatasetBrowser);
   $('model-family').addEventListener('change',renderModels);
